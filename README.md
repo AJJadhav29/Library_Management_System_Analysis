@@ -24,5 +24,5 @@ practical skills in database design, joins, aggregation, CTEs, stored procedures
 ## Project Structure
 
 <p align="center">
-  <img src="library.JPG" width="700"/>
+  <img src="Library_Analysis_ERD.png" width="700"/>
 </p>
