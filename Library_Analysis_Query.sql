@@ -144,7 +144,7 @@ ON b.isbn = ist.issued_book_isbn
 LEFT JOIN return_status rs
 ON rs.issued_id = ist.issued_id
 WHERE rs.return_date IS NULL AND (current_date-ist.issued_date)>30
-ORDER BY 1
+ORDER BY 1;
 
 /*Task 14: Update Book Status on Return
 Write a query to update the status of books in the books table to "Yes" when they are returned (based on entries in the return_status table).*/
@@ -385,57 +385,82 @@ SELECT * FROM issued_status;
 SELECT * FROM return_status;
 SELECT * FROM members;
 
--- WRONG
+DROP TABLE IF EXISTS overdue_book;
 CREATE TABLE overdue_book
 AS
-
 SELECT 
 	m.member_id,
-	COUNT((CASE 
-			WHEN rs.return_date IS NULL THEN (CURRENT_DATE-ist.issued_date)
-			ELSE (rs.return_date-ist.issued_date)
-		END)>30) AS no_of_overdue_books,
-	SUM((CASE 
-			WHEN rs.return_date IS NULL THEN (CURRENT_DATE-ist.issued_date)
-			ELSE (rs.return_date-ist.issued_date)
-		END)-30) as fine_collected,
+	SUM(CASE 
+			WHEN (CASE 
+                    WHEN rs.return_date IS NULL 
+                    THEN CURRENT_DATE - ist.issued_date
+                    ELSE rs.return_date - ist.issued_date
+                END)>30
+					THEN 1
+					ELSE 0 
+					END
+					) AS no_of_overdue_books,
+	 SUM(
+        CASE 
+            WHEN 
+            (
+                CASE 
+                    WHEN rs.return_date IS NULL 
+                    THEN CURRENT_DATE - ist.issued_date
+                    ELSE rs.return_date - ist.issued_date
+                END
+            ) > 30
+            THEN (
+                (
+                    CASE 
+                        WHEN rs.return_date IS NULL 
+                        THEN CURRENT_DATE - ist.issued_date
+                        ELSE rs.return_date - ist.issued_date
+                    END
+                ) - 30
+            ) * 0.50
+            ELSE 0
+        END
+    ) as fine_collected,
 	COUNT(ist.issued_id) AS total_books_issued
 FROM members as m
 JOIN issued_status as ist
 	ON ist.issued_member_id = m.member_id
 LEFT JOIN return_status as rs
 	ON rs.issued_id = ist.issued_id
-WHERE ( 
-		CASE
-		WHEN rs.return_date IS NULL THEN (CURRENT_DATE-ist.issued_date)
-		ELSE (rs.return_date-ist.issued_date)
-		END)>30
-GROUP BY 1
+GROUP BY 1;
 
+SELECT * FROM overdue_book;
 
-
----------------------------------
+-- to check each books overdue days
 
 SELECT 
-	m.member_id,
-	COUNT(ist.issued_id) as no_of_book_issued,
-	COUNT((CURRENT_DATE - ist.issued_date)-30) AS no_of_overdue_days, 
-	COUNT((CURRENT_DATE - ist.issued_date)-30)*0.50 AS fine_collected
-FROM members as m 
-JOIN issued_status as ist 
-	ON ist.issued_member_id = m.member_id 
-JOIN books as bk 
-	ON bk.isbn = ist.issued_book_isbn 
-LEFT JOIN return_status as rs 
-	ON rs.issued_id = ist.issued_id 
-WHERE rs.return_date IS NULL AND ((CURRENT_DATE - ist.issued_date)-30 )>0 
-GROUP BY 1
+    m.member_id,
+    ist.issued_id,
+    ist.issued_date,
+    rs.return_date,
+    
+    CASE
+        WHEN rs.return_date IS NULL
+        THEN CURRENT_DATE - ist.issued_date
+        ELSE rs.return_date - ist.issued_date
+    END AS total_days
 
-
-
-SELECT m.member_id,
-	COUNT(ist.issued_id)
-FROM members as m
-JOIN issued_status as ist
+FROM members m
+JOIN issued_status ist
 ON ist.issued_member_id = m.member_id
-GROUP BY 1
+
+LEFT JOIN return_status rs
+ON rs.issued_id = ist.issued_id
+
+ORDER BY m.member_id;
+
+-- to check overdue book in dataset
+SELECT
+COUNT(*) AS total_books,
+SUM(
+    CASE 
+    WHEN (CURRENT_DATE - issued_date) > 30 
+    THEN 1 ELSE 0 END
+) AS overdue_books
+FROM issued_status;
