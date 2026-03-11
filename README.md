@@ -577,3 +577,22 @@ GROUP BY 1;
 
 SELECT * FROM overdue_book;
 ```
+
+#### 6. Findings & Reports
+
+The analysis shows that the database can be used not only for transaction management but also for performance monitoring and operational reporting. The queries support branch-level revenue tracking, employee activity measurement, overdue monitoring, and member engagement analysis.
+​
+Main reports generated in the project include:
+- Branch Performance Report – Shows branch ID, manager ID, books issued, books returned, and total rental revenue.
+- Book Issue Summary Report – Counts how often each book has been issued.
+- Active Members Report – Identifies members with recent issue activity.
+- Overdue Books Report – Highlights members with overdue books and supports fine calculation logic.
+- Employee Performance Report – Identifies employees with the highest number of processed book issues.
+- Unreturned Books Report – Lists books that remain issued without a recorded return date.
+- Damaged Return Monitoring Report – Identifies members linked to repeated damaged return patterns.
+These reports help reveal circulation trends, staff contribution, and risk areas such as overdue books and damaged returns. They also show how transactional data can be transformed into actionable operational insight through SQL.
+
+#### 7. Conclusion
+
+The Library Management System Analysis project demonstrates how PostgreSQL can be used to build and analyze a complete relational database for a real-world business scenario. Through schema design, foreign key relationships, CRUD operations, CTAS tables, stored procedures, and analytical queries, the project turns raw library records into useful insights for tracking performance, improving operations, and supporting better library management decisions.
+
