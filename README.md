@@ -26,6 +26,7 @@ practical skills in database design, joins, aggregation, CTEs, stored procedures
 <p align="center">
   <img src="Library_Analysis_ERD.png" width="700"/>
 </p>
+
 #### 1. Database Setup
 
 - Created a library database structure with six main tables: branch, employees, books, members, issuedstatus, and returnstatus.
